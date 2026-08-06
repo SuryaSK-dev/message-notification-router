@@ -1,0 +1,20 @@
+# environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# secrets
+.env
+
+# os
+.DS_Store
+Thumbs.db
+
+# caches / generated
+src/.cache/
+*.log
+.pytest_cache/
+
+# large/raw data — keep tracked selectively, see README
+dataset/media/
