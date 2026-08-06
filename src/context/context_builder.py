@@ -78,8 +78,14 @@ def build_context(dataset: Dataset, message_id: str) -> MessageContext:
     msg_rows = dataset.messages[dataset.messages["message_id"] == message_id]
     if msg_rows.empty:
         raise ValueError(f"message_id not found: {message_id}")
-    msg = msg_rows.iloc[0]
+    return build_context_from_row(dataset, msg_rows.iloc[0])
 
+def build_context_from_row(dataset: Dataset, msg: pd.Series) -> MessageContext:
+    """
+    Same logic as build_context, but takes a message row directly instead of
+    looking it up by message_id in dataset.messages. Used for evaluating
+    against sample_messages.csv, which has its own separate message_id space.
+    """
     user_id = msg["user_id"]
     user_rows = dataset.users[dataset.users["user_id"] == user_id]
     user = _row_to_dict(user_rows.iloc[0]) if not user_rows.empty else {}
@@ -109,7 +115,6 @@ def build_context(dataset: Dataset, message_id: str) -> MessageContext:
         business_history = _row_to_dict(bh_rows.iloc[0]) if not bh_rows.empty else None
 
     media_path = resolve_media_path(dataset, msg.get("media_type"), msg.get("media_id"))
-
     history = _get_history_for_message(dataset, msg)
 
     return MessageContext(
@@ -120,8 +125,8 @@ def build_context(dataset: Dataset, message_id: str) -> MessageContext:
         media_type=None if pd.isna(msg.get("media_type")) else msg["media_type"],
         media_id=None if pd.isna(msg.get("media_id")) else msg["media_id"],
         media_path=str(media_path) if media_path else None,
-        forwarded_count=int(msg["forwarded_count"]),
-        created_at=str(msg["created_at"]),
+        forwarded_count=int(msg["forwarded_count"]) if pd.notna(msg.get("forwarded_count")) else 0,
+        created_at=str(msg.get("created_at", "")),
         user=user,
         group=group,
         group_member=group_member,
