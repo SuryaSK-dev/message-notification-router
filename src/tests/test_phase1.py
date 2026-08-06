@@ -51,3 +51,10 @@ def test_build_context_for_group_message():
     group_msg = ds.messages[ds.messages["conversation_type"] == "group"].iloc[0]
     ctx = build_context(ds, group_msg["message_id"])
     assert ctx.group is not None
+
+# add to src/tests/test_phase1.py
+def test_build_context_for_personal_message():
+    ds = load_dataset()
+    personal_msg = ds.messages[ds.messages["conversation_type"] == "personal"].iloc[0]
+    ctx = build_context(ds, personal_msg["message_id"])
+    assert ctx.sender_user_id is not None
