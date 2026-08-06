@@ -78,7 +78,6 @@ ALL_RULES = [
     _rule_domain_mismatch_with_payment,
     _rule_high_report_count,
     _rule_sensitive_document_from_unknown_sender,
-    _rule_new_business_new_promotion_opted_out,
 ]
 
 
